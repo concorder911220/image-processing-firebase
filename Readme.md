@@ -8,6 +8,12 @@ $ cp .env.example .env
 
 # fill out the variables required from firebase project settings
 
+```
+
+## Run Project
+
+```bash
+
 # with docker
 $ docker build -t image-generation-api .
 $ docker run -p 3000:3000 image-generation-api
@@ -22,14 +28,14 @@ $ npm run start
 ## Project overview
 
 ```
+
 - using cookie for better security rather than auth Token
 
 - firebase authentication and role based authentication
 
 - seeding for admin user
-email: "superadmin@gmail.com",
-password: "admin123",
-
+  email: "superadmin@gmail.com",
+  password: "admin123",
 
 ```
 
@@ -45,13 +51,20 @@ password: "admin123",
 | `POST` | `/service/upscale`           | upscale effect                                                  |
 
 ```
-Include three middlewares
+
+Middlewares used for authentication and authorization
+
 - auth middleware
 - role middleware (for admin only)
 - service middleware (for service permission granted by admin)
+
 ```
 
 ## Benchmark
 
 ai-stability-serivce's api key has credit limit so should heck the credit limit before using the service or please create new one
 ![alt text](./image.png)
+
+```
+
+```
