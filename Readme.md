@@ -37,6 +37,10 @@ $ npm run start
   email: "superadmin@gmail.com",
   password: "admin123",
 
+- New user can't use each service until admin grant access
+
+- Admin can grant access for each effect to user
+
 ```
 
 | method | resource                     | description                                                     |
@@ -63,6 +67,8 @@ Middlewares used for authentication and authorization
 ## Benchmark
 
 ai-stability-serivce's api key has credit limit so should heck the credit limit before using the service or please create new one
+
+After comparing Freepik and Stability AI services, I decided to go with Freepik. It offers superior quality and faster performance. Additionally, Freepik provides a wider range of effect options to choose from.
 ![alt text](./image.png)
 
 ```
