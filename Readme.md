@@ -53,4 +53,5 @@ Include three middlewares
 
 ## Benchmark
 
+ai-stability-serivce's api key has credit limit so should heck the credit limit before using the service or please create new one
 ![alt text](./image.png)
