@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   grantPermission,
   removePermission,
+  benchmark,
 } from "../controllers/adminController";
 import { registerProtectedRoute } from "../infrastructure/server";
 import { IHTTPMethods } from "../utils/types";
@@ -26,6 +27,12 @@ class AdminRouter {
       IHTTPMethods.POST,
       "/remove-access",
       removePermission
+    );
+    registerProtectedRoute(
+      this.router,
+      IHTTPMethods.POST,
+      "/benchmark",
+      benchmark
     );
   }
 }

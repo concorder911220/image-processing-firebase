@@ -3,13 +3,13 @@ import admin from "firebase-admin";
 export function seedData() {
   admin
     .auth()
-    .getUserByEmail("superAdmin@gmail.com")
+    .getUserByEmail("superadmin@gmail.com")
     .then((r) => console.log("admin exists, seeding not needed"))
     .catch((e) => {
       admin
         .auth()
         .createUser({
-          email: "superAdmin@gmail.com",
+          email: "superadmin123@gmail.com",
           password: "admin123",
         })
         .then((u) => {

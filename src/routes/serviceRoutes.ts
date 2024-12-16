@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   handleRemoveBackground,
   handleTextToImage,
+  handleTextToImageAiStability,
   handleUpscale,
 } from "../controllers/imageController";
 import { registerProtectedRoute } from "../infrastructure/server";
@@ -33,6 +34,12 @@ class ServiceRouter {
       IHTTPMethods.POST,
       "/upscale",
       handleUpscale
+    );
+    registerProtectedRoute(
+      this.router,
+      IHTTPMethods.POST,
+      "/text-to-image-ai-stability",
+      handleTextToImageAiStability
     );
   }
 }

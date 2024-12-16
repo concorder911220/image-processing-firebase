@@ -1,5 +1,7 @@
 import admin from "firebase-admin";
 import { FieldValue } from "firebase-admin/firestore";
+import AiStabilityService from "../services/ai-stability-serivce";
+import FreepikService from "../services/freepik-service";
 
 enum AccessLevel {
   TEXT_TO_IMAGE = "text-to-image",
@@ -85,5 +87,38 @@ export const removePermission = async (req: any, res: any) => {
         accesses: FieldValue.arrayRemove(req.body.access),
       });
     res.status(200).send();
+  });
+};
+
+export const benchmark = async (req: any, res: any) => {
+  const freepik = new FreepikService();
+  const aiStability = new AiStabilityService();
+
+  const freepikStart = performance.now();
+  let freepikEnd: DOMHighResTimeStamp;
+  const promise1 = freepik
+    .textToImage({ prompt: req.body.prompt })
+    .then((_) => {
+      freepikEnd = performance.now();
+    })
+    .catch();
+
+  const aiStabilityStart = performance.now();
+  let aiStabilityEnd: DOMHighResTimeStamp;
+  const promise2 = aiStability
+    .textToImage({ prompt: req.body.prompt, outputFormat: "webp" })
+    .then((_) => {
+      aiStabilityEnd = performance.now();
+    });
+
+  await Promise.all([promise1, promise2]);
+
+  const freepikElapsed = Math.round(freepikEnd! - freepikStart);
+  const aiStabilityElapsed = Math.round(aiStabilityEnd! - aiStabilityStart);
+
+  res.status(200).json({
+    freepikElapsed: freepikElapsed,
+    aiStabilityElapsed: aiStabilityElapsed,
+    difference: Math.abs(freepikElapsed - aiStabilityElapsed),
   });
 };

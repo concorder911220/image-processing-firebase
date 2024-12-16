@@ -6,11 +6,6 @@ import {
 } from "../controllers/authController";
 import { registerRoute } from "../infrastructure/server";
 import { IHTTPMethods } from "../utils/types";
-
-// router.post("/register", handleRegister);
-// router.post("/login", handleLogin);
-// router.post("/logout", handleLogout);
-
 class AuthRouter {
   public router: Router;
 

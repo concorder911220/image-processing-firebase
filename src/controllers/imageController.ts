@@ -1,30 +1,40 @@
 import axios from "axios";
 import { Response } from "express";
+import FreepikService from "../services/freepik-service";
+import AiStabilityService from "../services/ai-stability-serivce";
 
 export const handleTextToImage = (req: any, res: Response) => {
-  const url = process.env.FREEPIK_URL;
-  const key = process.env.FREEPIK_API_KEY;
-
-  const headers: any = {
-    "Content-Type": "application/json",
-    "x-freepik-api-key": key,
-  };
-
+  const service = new FreepikService();
   const startTime = performance.now();
-  axios({
-    method: "post",
-    url: `${url}/text-to-image`,
-    data: {
+
+  service
+    .textToImage({
+      numImages: req.body.num_images,
       prompt: req.body.prompt,
-      negative_prompt: req.body.negative_prompt,
-      styling: req.body.styling,
-      guidance_scale: req.body.guidance_scale,
+      guidanceScale: req.body.guidance_scale,
       image: req.body.image,
-      num_images: req.body.num_images,
-      seed: req.body.seed,
-    },
-    headers: headers,
-  })
+      negativePrompt: req.body.negative_prompt,
+      styling: req.body.styling,
+    })
+    .then((response) => {
+      const endTime = performance.now();
+      const elapsed = endTime - startTime;
+      res.status(200).json({ elapsed: Math.round(elapsed), ...response.data });
+    })
+    .catch((e) => {
+      res.status(e.status).json({ error: e.response.data.message });
+    });
+};
+
+export const handleTextToImageAiStability = (req: any, res: Response) => {
+  const service = new AiStabilityService();
+  const startTime = performance.now();
+
+  service
+    .textToImage({
+      prompt: req.body.prompt,
+      outputFormat: req.body.output_format,
+    })
     .then((response) => {
       const endTime = performance.now();
       const elapsed = endTime - startTime;
@@ -36,23 +46,11 @@ export const handleTextToImage = (req: any, res: Response) => {
 };
 
 export const handleRemoveBackground = (req: any, res: Response) => {
-  const url = process.env.FREEPIK_URL;
-  const key = process.env.FREEPIK_API_KEY;
-
-  const headers: any = {
-    "Content-Type": "application/x-www-form-urlencoded",
-    "x-freepik-api-key": key,
-  };
-
+  const service = new FreepikService();
   const startTime = performance.now();
-  axios({
-    method: "post",
-    url: `${url}/beta/remove-background`,
-    data: {
-      image_url: req.body.image_url,
-    },
-    headers: headers,
-  })
+
+  service
+    .removeBackground(req.body.image_url)
     .then((response) => {
       const endTime = performance.now();
       const elapsed = endTime - startTime;
@@ -64,34 +62,24 @@ export const handleRemoveBackground = (req: any, res: Response) => {
 };
 
 export const handleUpscale = (req: any, res: Response) => {
-  const url = process.env.FREEPIK_URL;
-  const key = process.env.FREEPIK_API_KEY;
-
-  const headers: any = {
-    "x-freepik-api-key": key,
-  };
-
+  const service = new FreepikService();
   const startTime = performance.now();
 
-  axios({
-    method: "post",
-    url: `${url}/image-upscaler`,
-    data: {
-      image: req.body.image,
-      scale_factor: req.body.scale_factor,
-      optimized_for: req.body.optimized_for,
+  service
+    .upscale({
       prompt: req.body.prompt,
-      creativity: 2,
-      hdr: 1,
-    },
-    headers: headers,
-  })
+      guidanceScale: req.body.guidance_scale,
+      image: req.body.image,
+      negativePrompt: req.body.negative_prompt,
+      numImages: req.body.num_images,
+      optimizedFor: req.body.optimizedFor,
+    })
     .then(async (r) => {
       const task_id = r.data.data.task_id;
 
       const poll = {
         refresh: async () => {
-          const response = await _getStatus(task_id);
+          const response = await service.getUpscaleStatus(task_id);
 
           if (response.data.data.status == "COMPLETED") {
             const endTime = performance.now();
@@ -110,20 +98,3 @@ export const handleUpscale = (req: any, res: Response) => {
       res.status(e.status).json({ error: e.response.data.message });
     });
 };
-
-async function _getStatus(task_id: string): Promise<any> {
-  const url = process.env.FREEPIK_URL;
-  const key = process.env.FREEPIK_API_KEY;
-
-  const headers: any = {
-    "x-freepik-api-key": key,
-  };
-
-  const response = await axios({
-    method: "get",
-    url: `${url}/image-upscaler/${task_id}`,
-    headers: headers,
-  });
-
-  return response;
-}

@@ -1,0 +1,524 @@
+/api/register
+
+/**
+ * @swagger
+ * /api/register:
+ *   post:
+ *     summary: Registers a new user
+ *     description: Creates a new user with email and password, assigns a default role, and returns a success response along with a token.
+ *     tags:
+ *       - Authentication
+ *     parameters:
+ *       - in: body
+ *         name: user
+ *         description: User object containing email and password
+ *         required: true
+ *         schema:
+ *           type: object
+ *           required:
+ *             - email
+ *             - password
+ *           properties:
+ *             email:
+ *               type: string
+ *               format: email
+ *               description: The user's email address.
+ *             password:
+ *               type: string
+ *               format: password
+ *               description: The user's password.
+ *     responses:
+ *       200:
+ *         description: User successfully registered
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: User signed up successfully
+ *                 credentials:
+ *                   type: object
+ *                   description: Firebase user credentials
+ *       400:
+ *         description: Invalid input or error during registration
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: An error occurred while registering user
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Internal Server Error
+ */
+
+
+---------------------------------------------------------------------------------------------------------------
+
+/api/login
+
+/**
+ * @swagger
+ * /api/login:
+ *   post:
+ *     summary: Logs the user in using email and password.
+ *     description: Authenticates the user by signing them in with email and password, and if successful, sets an authentication cookie with the token.
+ *     operationId: loginUser
+ *     parameters:
+ *       - in: body
+ *         name: credentials
+ *         description: The credentials of the user (email and password).
+ *         required: true
+ *         schema:
+ *           type: object
+ *           properties:
+ *             email:
+ *               type: string
+ *               example: "user@example.com"
+ *               description: User's email address.
+ *             password:
+ *               type: string
+ *               example: "password123"
+ *               description: User's password.
+ *     tags:
+ *       - Authentication
+ *     responses:
+ *       200:
+ *         description: Successfully logged in and token set as a cookie
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "User logged in successfully"
+ *                 credentials:
+ *                   type: object
+ *                   description: The credentials returned after a successful login.
+ *       403:
+ *         description: User does not exist or incorrect credentials
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "User does not exist"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Internal Server Error"
+ *     security: []
+ */
+
+---------------------------------------------------------------------------------------------------------------
+
+
+/api/logout
+
+/**
+ * @swagger
+ * /api/logout:
+ *   post:
+ *     summary: Logs the user out and clears the authentication cookie.
+ *     description: Logs the user out by signing them out from the authentication service and clearing the "access_token" cookie.
+ *     operationId: logoutUser
+ *     parameters: []
+ *     tags:
+ *       - Authentication
+ *     responses:
+ *       200:
+ *         description: Successfully logged out
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "User logged out successfully"
+ *       400:
+ *         description: Bad request. User is not authenticated or a required parameter is missing.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Bad Request"
+ *       500:
+ *         description: Internal server error, failed to log out
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Internal Server Error"
+ *     security:
+ *       - cookieAuth: []
+ */
+
+
+---------------------------------------------------------------------------------------------------------------
+
+/api/service/text-to-image
+
+/**
+ * @swagger
+ * /api/service/text-to-image:
+ *   post:
+ *     summary: Converts text prompt into an image using Freepik's API.
+ *     description: Sends a request to Freepik's text-to-image API, passing the user's prompt and parameters to generate an image.
+ *     operationId: generateImageFromText
+ *     parameters:
+ *       - in: body
+ *         name: requestBody
+ *         description: The input parameters for generating the image.
+ *         required: true
+ *         schema:
+ *           type: object
+ *           properties:
+ *             prompt:
+ *               type: string
+ *               example: "A beautiful sunset over the ocean"
+ *               description: The main prompt or description for the image.
+ *             negative_prompt:
+ *               type: string
+ *               example: "No clouds in the sky"
+ *               description: Any negative aspect or unwanted features in the image.
+ *             styling:
+ *               type: string
+ *               example: "Realistic"
+ *               description: The desired style of the image (e.g., "photorealistic", "cartoon", etc.).
+ *             guidance_scale:
+ *               type: number
+ *               example: 7.5
+ *               description: The scale of the guidance for the image generation.
+ *             image:
+ *               type: string
+ *               example: "base64_encoded_string"
+ *               description: Optionally, an image to use as a reference or base for generating the new image.
+ *             num_images:
+ *               type: integer
+ *               example: 1
+ *               description: The number of images to generate.
+ *             seed:
+ *               type: integer
+ *               example: 42
+ *               description: The seed value for random number generation to ensure repeatability.
+ *     tags:
+ *       - Image Generation
+ *     responses:
+ *       200:
+ *         description: Successfully generated the image(s)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 elapsed:
+ *                   type: integer
+ *                   description: The time (in milliseconds) taken to generate the image.
+ *                   example: 500
+ *                 data:
+ *                   type: object
+ *                   description: The generated image(s) and related data.
+ *                   example: { "image_urls": ["url1", "url2"] }
+ *       400:
+ *         description: Bad request, missing or incorrect input parameters
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Missing required prompt"
+ *       500:
+ *         description: Internal server error, failed to generate image
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Failed to contact the Freepik API"
+ *     security: []
+ */
+
+---------------------------------------------------------------------------------------------------------------
+
+/api/service/remove-background
+
+/**
+ * @swagger
+ * /api/service/remove-background:
+ *   post:
+ *     summary: Removes the background from an image using Freepik's API.
+ *     description: Sends a request to Freepik's background removal API, passing an image URL, and returns the image with the background removed.
+ *     operationId: removeBackgroundFromImage
+ *     parameters:
+ *       - in: body
+ *         name: requestBody
+ *         description: The input parameter containing the image URL for background removal.
+ *         required: true
+ *         schema:
+ *           type: object
+ *           properties:
+ *             image_url:
+ *               type: string
+ *               example: "https://example.com/image.jpg"
+ *               description: The URL of the image from which the background needs to be removed.
+ *     tags:
+ *       - Image Processing
+ *     responses:
+ *       200:
+ *         description: Successfully removed the background from the image.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 elapsed:
+ *                   type: integer
+ *                   description: The time (in milliseconds) taken to process the image.
+ *                   example: 300
+ *                 data:
+ *                   type: object
+ *                   description: The response data from the Freepik API, including the processed image URL.
+ *                   example: { "image_url": "https://example.com/processed_image.png" }
+ *       400:
+ *         description: Bad request, missing or incorrect image URL.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Missing required image_url"
+ *       500:
+ *         description: Internal server error, failed to contact the Freepik API.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Failed to contact the Freepik API"
+ *     security: []
+ */
+
+---------------------------------------------------------------------------------------------------------------
+
+/api/service/upscale
+
+/**
+ * @swagger
+ * /api/service/upscale:
+ *   post:
+ *     summary: Upscales an image by a specified scale factor using Freepik's API.
+ *     description: This endpoint sends an image to Freepik's image upscaling API to increase its resolution by the specified scale factor. The endpoint polls for the completion of the task and returns the result once the image is successfully upscaled.
+ *     operationId: upscaleImage
+ *     parameters:
+ *       - in: body
+ *         name: requestBody
+ *         description: The input parameters for the image upscaling process.
+ *         required: true
+ *         schema:
+ *           type: object
+ *           properties:
+ *             image:
+ *               type: string
+ *               example: "base64_encoded_image_string"
+ *               description: The image to be upscaled, represented as a base64 encoded string.
+ *             scale_factor:
+ *               type: number
+ *               example: 2
+ *               description: The scale factor by which the image resolution will be increased (e.g., 2x, 4x).
+ *             optimized_for:
+ *               type: string
+ *               example: "web"
+ *               description: The intended optimization of the upscaled image, such as "web" or "print".
+ *             prompt:
+ *               type: string
+ *               example: "Enhance the quality of the image."
+ *               description: A prompt or description that can help guide the upscaling process.
+ *     tags:
+ *       - Image Processing
+ *     responses:
+ *       200:
+ *         description: Successfully upscaled the image, returning the task status and time taken.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 elapsed:
+ *                   type: integer
+ *                   description: The time (in milliseconds) taken to complete the upscaling task.
+ *                   example: 1200
+ *                 data:
+ *                   type: object
+ *                   description: The result data of the upscaled image, including task status and upscaled image details.
+ *                   example: { "image_url": "https://example.com/upscaled_image.jpg" }
+ *       400:
+ *         description: Bad request, missing or incorrect input parameters.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Missing required image"
+ *       500:
+ *         description: Internal server error, failed to contact the Freepik API or complete the upscaling task.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Failed to contact the Freepik API"
+ *     security: []
+ */
+
+---------------------------------------------------------------------------------------------------------------
+
+/api/admin/give-access
+
+/**
+ * @swagger
+ * /api/admin/give-access:
+ *   post:
+ *     summary: Grants a specific access to a user's role in Firestore.
+ *     description: This endpoint grants a specific access to a user by updating the user's role document in Firestore. The user is identified by their `uid`. If the user already has a role document, the specified access is added to their list of accesses.
+ *     operationId: giveAccessToUser
+ *     parameters:
+ *       - in: body
+ *         name: requestBody
+ *         description: The request body containing the user's `uid` and the access to be granted.
+ *         required: true
+ *         schema:
+ *           type: object
+ *           properties:
+ *             uid:
+ *               type: string
+ *               example: "user123"
+ *               description: The unique identifier of the user to whom the access is being granted.
+ *             access:
+ *               type: string
+ *               example: "editor"
+ *               description: The specific access level or permission to be granted to the user.
+ *     tags:
+ *       - Admin
+ *     responses:
+ *       200:
+ *         description: Successfully granted the access to the user's role.
+ *       400:
+ *         description: Bad request. Either the `uid` is missing or no matching user document was found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "user with given id does not exist"
+ *       500:
+ *         description: Internal server error while processing the request.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Failed to update access"
+ *     security:
+ *       - bearerAuth: []
+ */
+
+---------------------------------------------------------------------------------------------------------------
+
+/api/admin/remove-access
+
+
+/**
+ * @swagger
+ * /api/admin/remove-access:
+ *   post:
+ *     summary: Removes a specific access from a user's role in Firestore.
+ *     description: This endpoint removes a specific access from a user's role document in Firestore, identified by their `uid`. Requires the user to have an existing role document in the Firestore `roles` collection.
+ *     operationId: removeAccessFromUser
+ *     parameters:
+ *       - in: body
+ *         name: requestBody
+ *         description: The request body containing the user's `uid` and the access to be removed.
+ *         required: true
+ *         schema:
+ *           type: object
+ *           properties:
+ *             uid:
+ *               type: string
+ *               example: "user123"
+ *               description: The unique identifier of the user whose access needs to be removed.
+ *             access:
+ *               type: string
+ *               example: "admin"
+ *               description: The specific access level or permission to be removed from the user's role.
+ *     tags:
+ *       - Admin
+ *     responses:
+ *       200:
+ *         description: Successfully removed the access from the user's role.
+ *       400:
+ *         description: Bad request. Either the `uid` is missing or no matching user document was found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "user with given id does not exist"
+ *       500:
+ *         description: Internal server error while processing the request.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Failed to update access"
+ *     security:
+ *       - bearerAuth: []
+ */
+
