@@ -41,6 +41,13 @@ $ npm run start
 
 - Admin can grant access for each effect to user
 
+    enum AccessLevel {
+      TEXT_TO_IMAGE = "text-to-image",
+      REMOVE_BACKGROUND = "remove-background",
+      UPSCALE = "upscale",
+      TEXT_TO_IMAGE_AI_STABILITY = "text-to-image-ai-stability",
+    }
+
 ```
 
 | method | resource                     | description                                                     |
