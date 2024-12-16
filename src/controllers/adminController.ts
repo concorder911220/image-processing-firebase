@@ -7,6 +7,7 @@ enum AccessLevel {
   TEXT_TO_IMAGE = "text-to-image",
   REMOVE_BACKGROUND = "remove-background",
   UPSCALE = "upscale",
+  TEXT_TO_IMAGE_AI_STABILITY = "text-to-image-ai-stability",
 }
 export const grantPermission = async (req: any, res: any) => {
   const { uid, access } = req.body;
